@@ -9,6 +9,12 @@
 - TXT: 1건
 - 일반 텍스트 추출 가능: 2건
 - OCR 처리 완료: 13건, 206페이지
+- 최종 분석 DB 제외: `03_퇴은뜰 조류지 조성사업 편입 찬성에 대한 소유자동의서(118명).pdf`
+- 최종 분석 DB 페이지 제한:
+  - `01_주민건의서.pdf`: 1페이지
+  - `주민건의서(화포천).pdf`: 1-2페이지
+- OCR 회전 보정:
+  - `02_탄원서 주요내용 요약.pdf`: 270도 회전 OCR
 
 ## 텍스트 추출 가능
 
@@ -43,6 +49,9 @@
 - `data/interim/hearing_pdf_ocr_documents.csv`
 - `data/interim/hearing_pdf_ocr_pages.csv`
 - `data/interim/hearing_pdf_ocr_texts/*.txt`
+- `data/interim/hearing_pdf_ocr_documents_corrected.csv`
+- `data/interim/hearing_pdf_ocr_pages_corrected.csv`
+- `data/interim/hearing_pdf_ocr_texts_corrected/*.txt`
 - `data/processed/hearing_documents.csv`
 - `data/processed/hearing_pages.csv`
 

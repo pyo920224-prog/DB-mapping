@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import csv
 import os
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -9,24 +10,23 @@ import fitz
 import pytesseract
 from PIL import Image
 
-from extract_hearing_pdf_text import (
-    DOCUMENTS_CSV,
-    INTERIM_DIR,
-    PROJECT_ROOT,
-    TEXT_DIR,
-    clean_text,
-)
+from extract_hearing_pdf_text import DOCUMENTS_CSV, INTERIM_DIR, PROJECT_ROOT, clean_text
 
 
 TESSERACT_EXE = Path(r"C:\Program Files\Tesseract-OCR\tesseract.exe")
 TESSDATA_DIR = PROJECT_ROOT / "tessdata"
-OCR_PAGES_CSV = INTERIM_DIR / "hearing_pdf_ocr_pages.csv"
-OCR_DOCUMENTS_CSV = INTERIM_DIR / "hearing_pdf_ocr_documents.csv"
-OCR_TEXT_DIR = INTERIM_DIR / "hearing_pdf_ocr_texts"
+OCR_PAGES_CSV = INTERIM_DIR / "hearing_pdf_ocr_pages_corrected.csv"
+OCR_DOCUMENTS_CSV = INTERIM_DIR / "hearing_pdf_ocr_documents_corrected.csv"
+OCR_TEXT_DIR = INTERIM_DIR / "hearing_pdf_ocr_texts_corrected"
+PROCESSED_DOCUMENTS_CSV = PROJECT_ROOT / "data" / "processed" / "hearing_documents.csv"
+OCR_ROTATIONS = {
+    "hearing_pdf_02_탄원서_주요내용_요약": 270,
+}
 
 
 def read_documents() -> list[dict[str, str]]:
-    with DOCUMENTS_CSV.open("r", encoding="utf-8-sig", newline="") as source:
+    source_path = DOCUMENTS_CSV if DOCUMENTS_CSV.exists() else PROCESSED_DOCUMENTS_CSV
+    with source_path.open("r", encoding="utf-8-sig", newline="") as source:
         return list(csv.DictReader(source))
 
 
@@ -37,9 +37,11 @@ def write_csv(path: Path, rows: list[dict[str, object]], fieldnames: list[str]) 
         writer.writerows(rows)
 
 
-def ocr_page(page: fitz.Page, dpi: int) -> str:
+def ocr_page(page: fitz.Page, dpi: int, rotation: int = 0) -> str:
     pixmap = page.get_pixmap(dpi=dpi, alpha=False)
     image = Image.frombytes("RGB", [pixmap.width, pixmap.height], pixmap.samples)
+    if rotation:
+        image = image.rotate(rotation, expand=True)
     config = "--oem 1 --psm 6"
     text = pytesseract.image_to_string(image, lang="kor", config=config)
     return clean_text(text)
@@ -59,8 +61,12 @@ def main() -> None:
     targets = [
         doc
         for doc in documents
-        if doc.get("source_type") == "hearing_pdf" and doc.get("needs_ocr") == "True"
+        if doc.get("source_type") == "hearing_pdf"
+        and (doc.get("needs_ocr") == "True" or doc.get("text_source") == "ocr")
     ]
+    selected_doc_ids = set(sys.argv[1:])
+    if selected_doc_ids:
+        targets = [doc for doc in targets if doc["doc_id"] in selected_doc_ids]
 
     ocr_documents: list[dict[str, object]] = []
     ocr_pages: list[dict[str, object]] = []
@@ -75,7 +81,7 @@ def main() -> None:
         try:
             with fitz.open(pdf_path) as pdf:
                 for page_index, page in enumerate(pdf, start=1):
-                    text = ocr_page(page, dpi=250)
+                    text = ocr_page(page, dpi=250, rotation=OCR_ROTATIONS.get(doc_id, 0))
                     row = {
                         "doc_id": doc_id,
                         "page_no": page_index,
