@@ -1,0 +1,19 @@
+# Raw and generated data may contain personal or non-public information.
+data/raw/**/*.pdf
+data/raw/**/*.PDF
+data/raw/**/*.txt
+data/raw/**/*.TXT
+data/interim/*
+data/processed/*
+outputs/*
+
+!data/raw/**/
+!data/raw/**/.gitkeep
+!data/interim/.gitkeep
+!data/processed/.gitkeep
+!outputs/.gitkeep
+
+__pycache__/
+*.pyc
+.venv/
+venv/
