@@ -7,8 +7,8 @@
 - 전체 자료: 15건
 - PDF: 14건
 - TXT: 1건
-- 텍스트 추출 가능: 2건
-- OCR 필요: 13건
+- 일반 텍스트 추출 가능: 2건
+- OCR 처리 완료: 13건, 206페이지
 
 ## 텍스트 추출 가능
 
@@ -31,6 +31,8 @@
 - `16042025185437.pdf`
 - `주민건의서(화포천).pdf`
 
+위 13건은 Tesseract 한국어 OCR로 처리했습니다.
+
 ## 생성 산출물
 
 스크립트 실행 시 아래 파일이 생성됩니다.
@@ -38,5 +40,10 @@
 - `data/interim/hearing_pdf_documents.csv`
 - `data/interim/hearing_pdf_pages.csv`
 - `data/interim/hearing_pdf_texts/*.txt`
+- `data/interim/hearing_pdf_ocr_documents.csv`
+- `data/interim/hearing_pdf_ocr_pages.csv`
+- `data/interim/hearing_pdf_ocr_texts/*.txt`
+- `data/processed/hearing_documents.csv`
+- `data/processed/hearing_pages.csv`
 
 원본과 생성 데이터는 개인정보 또는 비공개 정보가 포함될 수 있어 Git 추적 대상에서 제외했습니다.

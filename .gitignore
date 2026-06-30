@@ -6,12 +6,14 @@ data/raw/**/*.TXT
 data/interim/*
 data/processed/*
 outputs/*
+tessdata/*.traineddata
 
 !data/raw/**/
 !data/raw/**/.gitkeep
 !data/interim/.gitkeep
 !data/processed/.gitkeep
 !outputs/.gitkeep
+!tessdata/.gitkeep
 
 __pycache__/
 *.pyc
