@@ -3,6 +3,7 @@ data/raw/**/*.pdf
 data/raw/**/*.PDF
 data/raw/**/*.txt
 data/raw/**/*.TXT
+data/raw/news/*.csv
 data/interim/*
 data/processed/*
 outputs/*
