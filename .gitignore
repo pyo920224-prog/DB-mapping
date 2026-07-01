@@ -4,6 +4,7 @@ data/raw/**/*.PDF
 data/raw/**/*.txt
 data/raw/**/*.TXT
 data/raw/news/*.csv
+data/raw/press_releases/*.csv
 data/interim/*
 data/processed/*
 outputs/*
