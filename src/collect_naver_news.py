@@ -99,8 +99,25 @@ def publisher_from_url(url: str) -> str:
     return host
 
 
+def extract_date_text(link) -> str:
+    date_pattern = re.compile(
+        r"(\d{4}\.\d{1,2}\.\d{1,2}\.|\d+\s*(?:분|시간|일|주|개월|년)\s*전|어제)"
+    )
+    current = link
+    for _ in range(8):
+        current = current.parent
+        if current is None:
+            break
+        text = clean_text(current.get_text(" "))
+        match = date_pattern.search(text)
+        if match:
+            return match.group(1).replace(" ", "")
+    return ""
+
+
 def parse_current_naver_news(soup: BeautifulSoup, keyword: str, page: int) -> list[dict[str, str]]:
     grouped: dict[str, list[str]] = {}
+    date_texts: dict[str, str] = {}
     naver_urls: dict[str, str] = {}
 
     for link in soup.select(".group_news a[href]"):
@@ -115,6 +132,7 @@ def parse_current_naver_news(soup: BeautifulSoup, keyword: str, page: int) -> li
         grouped.setdefault(url, [])
         if text not in grouped[url]:
             grouped[url].append(text)
+        date_texts.setdefault(url, extract_date_text(link))
 
     rows: list[dict[str, str]] = []
     for rank, (article_url, texts) in enumerate(grouped.items(), start=1):
@@ -132,7 +150,7 @@ def parse_current_naver_news(soup: BeautifulSoup, keyword: str, page: int) -> li
                 "search_rank": str(rank),
                 "title": title,
                 "publisher": publisher_from_url(article_url),
-                "published_date_text": "",
+                "published_date_text": date_texts.get(article_url, ""),
                 "url": article_url,
                 "naver_news_url": naver_urls.get(article_url, ""),
                 "summary": summary,
